@@ -7,6 +7,7 @@ enum PlayerState {
 	fall,
 	duck,
 	slide,
+	dead,
 }
 
 @onready var animated: AnimatedSprite2D = $AnimatedSprite2D
@@ -14,8 +15,8 @@ enum PlayerState {
 @export var max_count_jump = 2
 @export var max_speed = 180.0
 @export var acceleration = 500
-@export var deceleration = 500
-@export var slide_deceleration = 100
+@export var deceleration = 600
+@export var slide_deceleration = 50
 
 const JUMP_VELOCITY = -300.0
 
@@ -43,6 +44,8 @@ func _physics_process(delta: float) -> void:
 			fall_state(delta)
 		PlayerState.slide:
 			slide_state(delta)
+		PlayerState.dead:
+			dead_state(delta)
 	
 	move_and_slide()
 
@@ -82,6 +85,11 @@ func go_to_slide_state():
 func exit_from_slide_state():
 	set_large_collider()
 
+func go_to_dead_state():
+	status = PlayerState.dead
+	animated.play("dead")
+	velocity = Vector2.ZERO
+
 func idle_state(delta: float):
 	move(delta)
 	if velocity.x != 0:
@@ -98,7 +106,7 @@ func idle_state(delta: float):
 
 func jump_state(delta: float):
 	move(delta)
-	if Input.is_action_just_pressed("jump"):
+	if Input.is_action_just_pressed("jump") && can_jump():
 		go_to_jump_state()
 		return
 
@@ -108,7 +116,7 @@ func jump_state(delta: float):
 
 func fall_state(delta: float):
 	move(delta)
-	if Input.is_action_just_pressed("jump"):
+	if Input.is_action_just_pressed("jump") && can_jump():
 		go_to_jump_state()
 		return
 
@@ -159,6 +167,9 @@ func slide_state(delta: float):
 		go_to_duck_state()
 		return
 
+func dead_state(_delta: float):
+	pass
+
 func move(delta: float): 
 	update_direction()
 	
@@ -187,3 +198,12 @@ func set_large_collider():
 	collision_shape.shape.radius = 6
 	collision_shape.shape.height = 16
 	collision_shape.position.y = 0
+
+
+func _on_hitbox_area_entered(area: Area2D) -> void:
+	if velocity.y > 0:
+		# inimigo morre
+		area.get_parent().take_damage()
+	else:
+		# player morre
+		go_to_dead_state()

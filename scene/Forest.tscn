@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=4 uid="uid://v0btauhsdfij"]
+[gd_scene load_steps=17 format=4 uid="uid://v0btauhsdfij"]
 
 [ext_resource type="PackedScene" uid="uid://bdy6ipw5nsq48" path="res://entities/player.tscn" id="1_gwqlw"]
 [ext_resource type="TileSet" uid="uid://c6t4xbkbx5lqb" path="res://tiles/terrain.tres" id="2_bxv66"]
@@ -12,6 +12,7 @@
 [ext_resource type="Texture2D" uid="uid://bgtx1oc6maw6h" path="res://sprites/Seasonal Tilesets/2 - Autumn Forest/Background parts/1 - Leaf_top.png" id="8_e10fd"]
 [ext_resource type="PackedScene" uid="uid://c530ni2kitqqi" path="res://entities/camera.tscn" id="9_ncoq4"]
 [ext_resource type="PackedScene" uid="uid://br5nowl374oyy" path="res://entities/level_end.tscn" id="12_e10fd"]
+[ext_resource type="PackedScene" uid="uid://fxsf7b4jyno5" path="res://entities/skeleton.tscn" id="13_q3c55"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_emwbm"]
 texture = ExtResource("3_mslh7")
@@ -159,5 +160,8 @@ next_level = "Game"
 [node name="CollisionShape2D" parent="LevelEnd" index="0"]
 position = Vector2(614, 96.5)
 shape = SubResource("RectangleShape2D_q3c55")
+
+[node name="Skeleton" parent="." instance=ExtResource("13_q3c55")]
+position = Vector2(69, 166)
 
 [editable path="LevelEnd"]
