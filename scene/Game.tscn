@@ -119,6 +119,7 @@ limit_right = 440
 
 [node name="Player" parent="." instance=ExtResource("1_4aemu")]
 position = Vector2(26, 136)
+max_count_jump = 1
 
 [node name="LevelEnd" parent="." instance=ExtResource("11_r3aus")]
 position = Vector2(387, 107)
