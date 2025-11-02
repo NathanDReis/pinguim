@@ -156,6 +156,7 @@ height = 26.0
 size = Vector2(13, 26)
 
 [node name="Skeleton" type="CharacterBody2D"]
+position = Vector2(0, 0.1)
 collision_layer = 4
 script = ExtResource("1_yag7t")
 

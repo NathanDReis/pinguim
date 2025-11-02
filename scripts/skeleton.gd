@@ -14,7 +14,7 @@ const SPINNING_BONE = preload("uid://h6r7mi6st12l")
 @onready var player_detector: RayCast2D = $PlayerDetector
 @onready var bone_start_position: Node2D = $BoneStartPosition
 
-const SPEED = 10.0
+const SPEED = 7.0
 var status: SkeletonState
 var direction = 1
 var can_attack = true
@@ -52,9 +52,12 @@ func go_to_hurt_state():
 	animated.play("hurt")
 	hitbox.process_mode = Node.PROCESS_MODE_DISABLED
 	velocity = Vector2.ZERO
-	
+
 func walk_state(_delta: float):
-	velocity.x = SPEED * direction
+	if animated.frame == 3 or animated.frame == 4:
+		velocity.x = SPEED * direction
+	else:
+		velocity.x = 0
 	
 	if wall_detector.is_colliding():
 		scale.x *= -1
