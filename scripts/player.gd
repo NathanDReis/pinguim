@@ -5,6 +5,7 @@ enum PlayerState {
 	walk,
 	jump,
 	wall,
+	swimming,
 	fall,
 	duck,
 	slide,
@@ -43,6 +44,8 @@ func _physics_process(delta: float) -> void:
 			jump_state(delta)
 		PlayerState.wall:
 			wall_state(delta)
+		PlayerState.swimming:
+			swimming_state(delta)
 		PlayerState.walk:
 			walk_state(delta)
 		PlayerState.duck:
@@ -74,6 +77,10 @@ func go_to_wall_state():
 	animated.play("wall")
 	velocity = Vector2.ZERO
 	jump_count = 0
+
+func go_to_swimming_state():
+	status = PlayerState.swimming
+	animated.play("swimming")
 
 func go_to_fall_state():
 	status = PlayerState.fall
@@ -176,6 +183,20 @@ func wall_state(delta: float):
 		go_to_jump_state()
 		return
 
+func swimming_state(delta: float):
+	update_direction()
+	
+	if direction:
+		velocity.x = move_toward(velocity.x, 100 * direction, 200 * delta)
+	else:
+		velocity.x = move_toward(velocity.x, 0, 200 * delta)
+		
+	var vertical_direction = Input.get_axis("jump", "duck")
+	if vertical_direction:
+		velocity.y = move_toward(velocity.y,  100 * vertical_direction, 200 * delta)
+	else:
+		velocity.y = move_toward(velocity.y,  0, 200 * delta)
+
 func walk_state(delta: float):
 	apply_gravity(delta)
 	move(delta)
@@ -265,6 +286,10 @@ func _on_hitbox_area_entered(area: Area2D) -> void:
 func _on_hitbox_body_entered(body: Node2D) -> void:
 	if body.is_in_group("LethalArea"):
 		go_to_hurt_state()
+		return
+		
+	if body.is_in_group("Water"):
+		go_to_swimming_state()
 		return
 
 func hit_enemy(area: Area2D):
