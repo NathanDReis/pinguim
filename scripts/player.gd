@@ -26,6 +26,9 @@ enum PlayerState {
 @export var slide_deceleration = 50
 @export var wall_acceleration = 40
 @export var wall_jump_velocity = 240
+@export var water_max_speed = 100
+@export var water_acceleration = 200
+@export var water_jump_force = -100
 
 const JUMP_VELOCITY = -300.0
 
@@ -81,6 +84,7 @@ func go_to_wall_state():
 func go_to_swimming_state():
 	status = PlayerState.swimming
 	animated.play("swimming")
+	velocity.y = min(velocity.y, 150)
 
 func go_to_fall_state():
 	status = PlayerState.fall
@@ -187,15 +191,15 @@ func swimming_state(delta: float):
 	update_direction()
 	
 	if direction:
-		velocity.x = move_toward(velocity.x, 100 * direction, 200 * delta)
+		velocity.x = move_toward(velocity.x, water_max_speed * direction, water_acceleration * delta)
 	else:
-		velocity.x = move_toward(velocity.x, 0, 200 * delta)
+		velocity.x = move_toward(velocity.x, 0, water_acceleration * delta)
 		
-	var vertical_direction = Input.get_axis("jump", "duck")
-	if vertical_direction:
-		velocity.y = move_toward(velocity.y,  100 * vertical_direction, 200 * delta)
-	else:
-		velocity.y = move_toward(velocity.y,  0, 200 * delta)
+	velocity.y +=  water_acceleration * delta
+	velocity.y = min(velocity.y, water_max_speed)
+	
+	if Input.is_action_just_pressed("jump"):
+		velocity.y = water_jump_force
 
 func walk_state(delta: float):
 	apply_gravity(delta)
@@ -304,3 +308,10 @@ func hit_lethal_area():
 
 func _on_reload_timer_timeout() -> void:
 	get_tree().reload_current_scene()
+
+
+func _on_hitbox_body_exited(body: Node2D) -> void:
+	if body.is_in_group("Water"):
+		jump_count = 0
+		go_to_jump_state()
+		return
